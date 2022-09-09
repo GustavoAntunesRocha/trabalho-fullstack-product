@@ -1,12 +1,12 @@
 package br.com.trabalhofullstack.product.domain;
 
-import java.util.Set;
-
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -27,19 +27,20 @@ public class Product {
 	
 	private String photoLocation;
 	
-	@OneToMany(mappedBy = "products")
-	private Set<Category> categories;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "category_id")
+	private Category category;
 	
 	public Product() {}
 
 	public Product(@NotBlank String name, @NotNull float price, String descripton, String photoLocation,
-			Set<Category> categories) {
+			Category category) {
 		super();
 		this.name = name;
 		this.price = price;
 		this.descripton = descripton;
 		this.photoLocation = photoLocation;
-		this.categories = categories;
+		this.category = category;
 	}
 
 	public int getId() {
@@ -78,12 +79,12 @@ public class Product {
 		this.photoLocation = photoLocation;
 	}
 
-	public Set<Category> getCategories() {
-		return categories;
+	public Category getCategory() {
+		return category;
 	}
 
-	public void setCategories(Set<Category> categories) {
-		this.categories = categories;
+	public void setCategories(Category category) {
+		this.category = category;
 	}
 
 }

@@ -3,10 +3,9 @@ package br.com.trabalhofullstack.product.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,26 +26,21 @@ public class ProductService {
 	@Autowired
 	private CategoryService categoryService;
 
-	public Product create(String name, float price, String description, String photoLocation,
-			Set<Category> categories) {
-		Product product = new Product(name, price, description, photoLocation, categories);
+	public Product create(String name, float price, String description, String photoLocation, Category category) {
+		Product product = new Product(name, price, description, photoLocation, category);
 		repository.save(product);
 		return product;
 	}
 
-	public void createFromDto(ProductDto productDto, List<CategoryDto> categoryDtos, MultipartFile imageFile) {
+	public void createFromDto(ProductDto productDto, CategoryDto categoryDto, MultipartFile imageFile) {
 		try {
-			String imagePath = "./src/main/resources/product-images/" + productDto.getName() + productDto.getId() + ".png";
+			String imagePath = "./src/main/resources/product-images/" + productDto.getName() + productDto.getId()
+					+ ".png";
 			File file = new File(imagePath);
-			Set<Category> categories = new HashSet<>();
-			for (CategoryDto category : categoryDtos) {
-				categories.add(categoryService.searchById(Integer.parseInt(category.getId())));
-			}
-			Product product = create(productDto.getName(), Float.parseFloat(productDto.getPrice()),
-					productDto.getDescription(), imagePath, categories);
-			for (Category category : categories) {
-				categoryService.addProduct(product, category);
-			}
+
+			create(productDto.getName(), Float.parseFloat(productDto.getPrice()), productDto.getDescription(),
+					imagePath, categoryService.searchById(Integer.parseInt(categoryDto.getId())));
+
 			FileOutputStream outputStream = new FileOutputStream(file);
 			outputStream.write(imageFile.getBytes());
 			outputStream.close();
@@ -63,5 +57,24 @@ public class ProductService {
 
 	public Optional<Product> searchById(int productId) {
 		return repository.findById(productId);
+	}
+
+	public Iterable<Product> searchAll() {
+		return repository.findAll();
+	}
+
+	public List<ProductDto> searchAllDto() {
+		Iterable<Product> products = searchAll();
+		List<ProductDto> productDtoList = new ArrayList<>();
+		for (Product product : products) {
+			ProductDto productDto = new ProductDto(Integer.toString(product.getId()), product.getName(),
+					Float.toString(product.getPrice()), product.getDescripton());
+
+			CategoryDto categoryDto = new CategoryDto(Integer.toString(product.getCategory().getId()), product.getCategory().getName());
+
+			productDto.setCategoriesDto(categoryDto);
+			productDtoList.add(productDto);
+		}
+		return productDtoList;
 	}
 }

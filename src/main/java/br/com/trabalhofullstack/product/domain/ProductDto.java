@@ -13,6 +13,7 @@ public class ProductDto {
 	
 	private String photoLocation;
 	
+	private CategoryDto categoryDto; 
 
 	public ProductDto(String id, String name, String price, String description) {
 		super();
@@ -60,6 +61,14 @@ public class ProductDto {
 
 	public void setPhotoLocation(String photoLocation) {
 		this.photoLocation = photoLocation;
+	}
+
+	public CategoryDto getCategoriesDto() {
+		return this.categoryDto;
+	}
+
+	public void setCategoriesDto(CategoryDto categoryDto) {
+		this.categoryDto = categoryDto;
 	}
 
 }
