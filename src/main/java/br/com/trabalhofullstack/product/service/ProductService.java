@@ -32,22 +32,34 @@ public class ProductService {
 		return product;
 	}
 
-	public void createFromDto(ProductDto productDto, CategoryDto categoryDto, MultipartFile imageFile) {
+	public Product createFromDto(ProductDto productDto, CategoryDto categoryDto, MultipartFile imageFile) {
 		try {
 			String imagePath = "./src/main/resources/product-images/" + productDto.getName() + productDto.getId()
 					+ ".png";
 			File file = new File(imagePath);
 
-			create(productDto.getName(), Float.parseFloat(productDto.getPrice()), productDto.getDescription(),
+			Product product = create(productDto.getName(), Float.parseFloat(productDto.getPrice()), productDto.getDescription(),
 					imagePath, categoryService.searchById(Integer.parseInt(categoryDto.getId())));
 
 			FileOutputStream outputStream = new FileOutputStream(file);
 			outputStream.write(imageFile.getBytes());
 			outputStream.close();
+			return product;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	public Product edit(Product product, ProductDto productDto) {
+		product.setName(productDto.getName());
+		product.setDescription(productDto.getDescription());
+		product.setPrice(Float.parseFloat(productDto.getPrice()));
+		product.setPhotoLocation(productDto.getPhotoLocation());
+		product.setCategories(categoryService.searchById(Integer.parseInt(productDto.getCategoriesDto().getId())));
+		repository.save(product);
+		return product;
 	}
 
 	public boolean delete(int productId) {
@@ -68,13 +80,23 @@ public class ProductService {
 		List<ProductDto> productDtoList = new ArrayList<>();
 		for (Product product : products) {
 			ProductDto productDto = new ProductDto(Integer.toString(product.getId()), product.getName(),
-					Float.toString(product.getPrice()), product.getDescripton());
+					Float.toString(product.getPrice()), product.getDescription());
 
 			CategoryDto categoryDto = new CategoryDto(Integer.toString(product.getCategory().getId()), product.getCategory().getName());
-
+			productDto.setPhotoLocation(product.getPhotoLocation());
 			productDto.setCategoriesDto(categoryDto);
 			productDtoList.add(productDto);
 		}
 		return productDtoList;
+	}
+	
+	public List<Product> searchByCategoryId(int categoryId){
+		Category category = categoryService.searchById(categoryId);
+		return repository.searchByCategory(category);
+	}
+	
+	public Product fromDto(ProductDto productDto) {
+		return new Product(productDto.getName(), Float.parseFloat(productDto.getPrice()), productDto.getDescription(),
+				productDto.getPhotoLocation(), categoryService.searchById(Integer.parseInt(productDto.getCategoriesDto().getId())));
 	}
 }

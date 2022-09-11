@@ -23,7 +23,7 @@ public class Product {
 	@NotNull
 	private float price;
 	
-	private String descripton;
+	private String description;
 	
 	private String photoLocation;
 	
@@ -33,12 +33,12 @@ public class Product {
 	
 	public Product() {}
 
-	public Product(@NotBlank String name, @NotNull float price, String descripton, String photoLocation,
+	public Product(@NotBlank String name, @NotNull float price, String description, String photoLocation,
 			Category category) {
 		super();
 		this.name = name;
 		this.price = price;
-		this.descripton = descripton;
+		this.description = description;
 		this.photoLocation = photoLocation;
 		this.category = category;
 	}
@@ -63,12 +63,12 @@ public class Product {
 		this.price = price;
 	}
 
-	public String getDescripton() {
-		return descripton;
+	public String getDescription() {
+		return this.description;
 	}
 
-	public void setDescripton(String descripton) {
-		this.descripton = descripton;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getPhotoLocation() {

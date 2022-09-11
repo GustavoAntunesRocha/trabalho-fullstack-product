@@ -1,7 +1,12 @@
 package br.com.trabalhofullstack.product.domain;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class CategoryDto {
 
+	@NotNull
+	@NotEmpty
 	private String id;
 	
 	private String name;
