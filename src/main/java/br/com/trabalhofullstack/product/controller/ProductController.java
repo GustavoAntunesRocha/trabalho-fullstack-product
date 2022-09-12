@@ -39,7 +39,11 @@ public class ProductController {
 		CategoryDto categoryDto2;
 		try {
 			categoryDto2 = mapper.readValue(categoryDto, CategoryDto.class);
-			return ResponseEntity.ok(productService.createFromDto(produtctDto, categoryDto2, file[0]));
+			Product product = productService.createFromDto(produtctDto, categoryDto2, file[0]);
+			if(product == null) {
+				return ResponseEntity.badRequest().body(null);
+			}
+			return ResponseEntity.ok(product);
 		} catch (JsonMappingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

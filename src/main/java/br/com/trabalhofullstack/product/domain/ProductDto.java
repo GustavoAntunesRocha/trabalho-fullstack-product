@@ -1,5 +1,7 @@
 package br.com.trabalhofullstack.product.domain;
 
+import javax.validation.constraints.NotNull;
+
 public class ProductDto {
 
 	
@@ -13,6 +15,7 @@ public class ProductDto {
 	
 	private String photoLocation;
 	
+	@NotNull
 	private CategoryDto categoryDto; 
 
 	public ProductDto(String id, String name, String price, String description) {

@@ -29,6 +29,7 @@ public class Product {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "category_id")
+	@NotNull
 	private Category category;
 	
 	public Product() {}

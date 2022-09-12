@@ -27,6 +27,9 @@ public class ProductService {
 	private CategoryService categoryService;
 
 	public Product create(String name, float price, String description, String photoLocation, Category category) {
+		if(category == null) {
+			return null;
+		}
 		Product product = new Product(name, price, description, photoLocation, category);
 		repository.save(product);
 		return product;
@@ -38,8 +41,12 @@ public class ProductService {
 					+ ".png";
 			File file = new File(imagePath);
 
+			Category category = categoryService.searchById(Integer.parseInt(categoryDto.getId()));
+			if(category == null) {
+				return null;
+			}
 			Product product = create(productDto.getName(), Float.parseFloat(productDto.getPrice()), productDto.getDescription(),
-					imagePath, categoryService.searchById(Integer.parseInt(categoryDto.getId())));
+					imagePath, category);
 
 			FileOutputStream outputStream = new FileOutputStream(file);
 			outputStream.write(imageFile.getBytes());
