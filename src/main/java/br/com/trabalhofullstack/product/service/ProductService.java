@@ -1,15 +1,11 @@
 package br.com.trabalhofullstack.product.service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import br.com.trabalhofullstack.product.domain.Category;
 import br.com.trabalhofullstack.product.domain.CategoryDto;
@@ -27,7 +23,7 @@ public class ProductService {
 	private CategoryService categoryService;
 
 	public Product create(String name, float price, String description, String photoLocation, Category category) {
-		if(category == null) {
+		if (category == null) {
 			return null;
 		}
 		Product product = new Product(name, price, description, photoLocation, category);
@@ -35,30 +31,18 @@ public class ProductService {
 		return product;
 	}
 
-	public Product createFromDto(ProductDto productDto, CategoryDto categoryDto, MultipartFile imageFile) {
-		try {
-			String imagePath = "./src/main/resources/product-images/" + productDto.getName() + productDto.getId()
-					+ ".png";
-			File file = new File(imagePath);
-
-			Category category = categoryService.searchById(Integer.parseInt(categoryDto.getId()));
-			if(category == null) {
-				return null;
-			}
-			Product product = create(productDto.getName(), Float.parseFloat(productDto.getPrice()), productDto.getDescription(),
-					imagePath, category);
-
-			FileOutputStream outputStream = new FileOutputStream(file);
-			outputStream.write(imageFile.getBytes());
-			outputStream.close();
-			return product;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public Product createFromDto(ProductDto productDto) {
+		Category category = categoryService.searchById(Integer.parseInt(productDto.getCategoriesDto().getId()));
+		if (category == null) {
+			return null;
 		}
-		return null;
+		Product product = create(productDto.getName(), Float.parseFloat(productDto.getPrice()),
+				productDto.getDescription(), productDto.getPhotoLocation(), category);
+
+		return product;
+
 	}
-	
+
 	public Product edit(Product product, ProductDto productDto) {
 		product.setName(productDto.getName());
 		product.setDescription(productDto.getDescription());
@@ -89,21 +73,23 @@ public class ProductService {
 			ProductDto productDto = new ProductDto(Integer.toString(product.getId()), product.getName(),
 					Float.toString(product.getPrice()), product.getDescription());
 
-			CategoryDto categoryDto = new CategoryDto(Integer.toString(product.getCategory().getId()), product.getCategory().getName());
+			CategoryDto categoryDto = new CategoryDto(Integer.toString(product.getCategory().getId()),
+					product.getCategory().getName());
 			productDto.setPhotoLocation(product.getPhotoLocation());
 			productDto.setCategoriesDto(categoryDto);
 			productDtoList.add(productDto);
 		}
 		return productDtoList;
 	}
-	
-	public List<Product> searchByCategoryId(int categoryId){
+
+	public List<Product> searchByCategoryId(int categoryId) {
 		Category category = categoryService.searchById(categoryId);
 		return repository.searchByCategory(category);
 	}
-	
+
 	public Product fromDto(ProductDto productDto) {
 		return new Product(productDto.getName(), Float.parseFloat(productDto.getPrice()), productDto.getDescription(),
-				productDto.getPhotoLocation(), categoryService.searchById(Integer.parseInt(productDto.getCategoriesDto().getId())));
+				productDto.getPhotoLocation(),
+				categoryService.searchById(Integer.parseInt(productDto.getCategoriesDto().getId())));
 	}
 }
